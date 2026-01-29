@@ -1,0 +1,46 @@
+@import url('https://fonts.googleapis.com/css2?family=Shrikhand&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+@plugin "daisyui" {
+  themes: red --default
+}
+@plugin "daisyui/theme" {
+  name: "red";
+  default: false;
+  prefersdark: false;
+  color-scheme: "light";
+  --color-base-100: oklch(96% 0.03 10);
+  --color-base-200: oklch(90% 0.06 10);
+  --color-base-300: oklch(82% 0.10 10);
+  --color-base-content: oklch(20% 0.02 10);
+  --color-primary: oklch(65% 0.25 25);
+  --color-primary-content: oklch(98% 0.01 0);
+  --color-secondary: oklch(55% 0.20 350);
+  --color-secondary-content: oklch(96% 0.02 350);
+  --color-accent: oklch(78% 0.18 350);
+  --color-accent-content: oklch(30% 0.05 350);
+  --color-neutral: oklch(22% 0.04 30);
+  --color-neutral-content: oklch(92% 0.02 30);
+  --color-info: oklch(75% 0.12 250);
+  --color-info-content: oklch(28% 0.05 250);
+  --color-success: oklch(78% 0.14 160);
+  --color-success-content: oklch(32% 0.06 160);
+  --color-warning: oklch(85% 0.18 85);
+  --color-warning-content: oklch(40% 0.10 85);
+  --color-error: oklch(60% 0.25 20);
+  --color-error-content: oklch(95% 0.01 0);
+  --radius-selector: 2rem;
+  --radius-field: 2rem;
+  --radius-box: 2rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 1;
+  --noise: 0;
+}
+
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
