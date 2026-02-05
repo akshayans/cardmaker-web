@@ -47,19 +47,41 @@ export default function ViewCard() {
     const el = audioRef.current;
     if (!el) return;
 
-    if (isOpen) {
+    const playPromise = el.play();
+    if (playPromise) {
+      playPromise
+        .then(() => setAutoplayBlocked(false))
+        .catch(() => setAutoplayBlocked(true));
+    }
+
+    return () => {
+      el.pause();
+      el.currentTime = 0;
+    };
+  }, [card?.audioUrl]);
+
+  useEffect(() => {
+    if (!autoplayBlocked) return;
+    if (!card?.audioUrl) return;
+
+    const onFirstInteraction = () => {
+      const el = audioRef.current;
+      if (!el) return;
       const playPromise = el.play();
       if (playPromise) {
         playPromise
           .then(() => setAutoplayBlocked(false))
           .catch(() => setAutoplayBlocked(true));
       }
-    } else {
-      el.pause();
-      el.currentTime = 0;
-      setAutoplayBlocked(false);
-    }
-  }, [isOpen, card?.audioUrl]);
+    };
+
+    window.addEventListener('click', onFirstInteraction, { once: true });
+    window.addEventListener('touchstart', onFirstInteraction, { once: true });
+    return () => {
+      window.removeEventListener('click', onFirstInteraction);
+      window.removeEventListener('touchstart', onFirstInteraction);
+    };
+  }, [autoplayBlocked, card?.audioUrl]);
 
   if (loading) {
     return (
@@ -96,68 +118,77 @@ export default function ViewCard() {
       </header>
 
       {card.audioUrl && (
-        <div className="w-full max-w-2xl mb-8">
-          <div className="bg-white rounded-xl shadow-lg p-4">
-            <audio
-              ref={audioRef}
-              className="w-full"
-              controls
-              preload="metadata"
-              src={card.audioUrl}
-            />
-            {autoplayBlocked && (
-              <div className="mt-2 text-sm text-black opacity-70">
-                tap play to start the music
+        <>
+          <audio
+            ref={audioRef}
+            className="hidden"
+            preload="auto"
+            playsInline
+            src={card.audioUrl}
+          />
+          {autoplayBlocked && (
+            <div className="w-full max-w-2xl mb-8">
+              <div className="bg-white rounded-xl shadow-lg p-4 text-sm text-black opacity-70">
+                tap anywhere to start the music
+              </div>
+            </div>
+          )}
+        </>
+      )}
+
+      {(() => {
+        const hasExtraSurprise = Boolean(
+          card.lastPageMessage || card.lastPageText || card.lastPageLink
+        );
+        return (
+          <div className="flex flex-row items-center gap-12 max-w-7xl flex-wrap justify-center">
+            <div 
+              className="relative w-112.5 h-150 perspective-2000px cursor-pointer group"
+              onClick={() => setIsOpen(!isOpen)}
+            >
+              <div 
+                className={`absolute inset-0 z-20 transition-transform duration-1000 ease-in-out origin-left transform-3d ${
+                  isOpen ? 'transform-[rotateY(-155deg)]' : 'group-hover:transform-[rotateY(-15deg)]'
+                }`}
+              >
+                <div className="absolute inset-0 bg-primary text-secondary-content rounded-r-2xl border-y-2 border-r-2 border-secondary-focus/30 flex items-center justify-center backface-hidden shadow-2xl">
+                  <div className="text-center px-10">
+                    <div className="text-7xl mb-8">{card.emoji}</div>
+                    <h1 className="text-5xl font-black text-white tracking-tight">{card.title}</h1>
+                  </div>
+                </div>
+
+                <div className="absolute inset-0 bg-white text-neutral-content rounded-l-2xl transform-[rotateY(180deg)] backface-hidden border-l border-white/10 flex flex-col items-center justify-center p-12">
+                    {card.imageUrl ? (
+                      <img src={card.imageUrl} alt="card" className="w-full h-full object-cover rounded-l-xl" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-gray-300 text-lg">no image</div>
+                    )}
+                </div>
+              </div>
+
+              <div className="absolute inset-0 z-10 bg-white text-neutral-content rounded-r-2xl border-2 border-neutral-focus shadow-[25px_25px_50px_-12px_rgba(0,0,0,0.5)] flex flex-col justify-between p-12">
+                <div className="space-y-8">
+                  <p className="text-sm text-black leading-relaxed opacity-80">
+                    {card.message}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {hasExtraSurprise && (
+              <div className="flex flex-col gap-4">
+                <button 
+                  className="btn btn-primary text-white p-5" 
+                  onClick={() => navigate(`/card/${cardId}/last`)}
+                >
+                  extra surprise
+                </button>
               </div>
             )}
           </div>
-        </div>
-      )}
-
-      <div className="flex flex-row items-center gap-12 max-w-7xl flex-wrap justify-center">
-        <div 
-          className="relative w-112.5 h-150 perspective-2000px cursor-pointer group"
-          onClick={() => setIsOpen(!isOpen)}
-        >
-          <div 
-            className={`absolute inset-0 z-20 transition-transform duration-1000 ease-in-out origin-left transform-3d ${
-              isOpen ? 'transform-[rotateY(-155deg)]' : 'group-hover:transform-[rotateY(-15deg)]'
-            }`}
-          >
-            <div className="absolute inset-0 bg-primary text-secondary-content rounded-r-2xl border-y-2 border-r-2 border-secondary-focus/30 flex items-center justify-center backface-hidden shadow-2xl">
-              <div className="text-center px-10">
-                <div className="text-7xl mb-8">{card.emoji}</div>
-                <h1 className="text-5xl font-black text-white tracking-tight">{card.title}</h1>
-              </div>
-            </div>
-
-            <div className="absolute inset-0 bg-white text-neutral-content rounded-l-2xl transform-[rotateY(180deg)] backface-hidden border-l border-white/10 flex flex-col items-center justify-center p-12">
-                {card.imageUrl ? (
-                  <img src={card.imageUrl} alt="card" className="w-full h-full object-cover rounded-l-xl" />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-gray-300 text-lg">no image</div>
-                )}
-            </div>
-          </div>
-
-          <div className="absolute inset-0 z-10 bg-white text-neutral-content rounded-r-2xl border-2 border-neutral-focus shadow-[25px_25px_50px_-12px_rgba(0,0,0,0.5)] flex flex-col justify-between p-12">
-            <div className="space-y-8">
-              <p className="text-sm text-black leading-relaxed opacity-80">
-                {card.message}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="flex flex-col gap-4">
-          <button 
-            className="btn btn-primary text-white p-5" 
-            onClick={() => navigate(`/card/${cardId}/last`)}
-          >
-            extra surprise
-          </button>
-        </div>
-      </div>
+        );
+      })()}
 
       <button 
         className="btn btn-secondary text-white p-5 mt-8" 
