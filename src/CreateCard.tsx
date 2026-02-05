@@ -11,6 +11,7 @@ export default function CreateCard() {
     emoji: '💖',
     message: '',
     imageUrl: '',
+    audioUrl: '',
     lastPageMessage: '',
     lastPageText: '',
     lastPageLink: '',
@@ -19,6 +20,8 @@ export default function CreateCard() {
   const [cardCreated, setCardCreated] = useState(false);
   const [cardLink, setCardLink] = useState('');
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [audioPreview, setAudioPreview] = useState<string | null>(null);
+  const [audioName, setAudioName] = useState<string>('');
 
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -45,6 +48,34 @@ export default function CreateCard() {
     reader.readAsDataURL(file);
   };
 
+  const handleAudioUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('audio/')) {
+      alert('Please upload an audio file');
+      return;
+    }
+
+    const maxBytes = 5 * 1024 * 1024;
+    if (file.size > maxBytes) {
+      alert('Audio file is too large. Please use an mp3 under 5MB.');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const base64 = event.target?.result as string;
+      setAudioPreview(base64);
+      setAudioName(file.name);
+      setFormData(prev => ({
+        ...prev,
+        audioUrl: base64
+      }));
+    };
+    reader.readAsDataURL(file);
+  };
+
   const handleCreateCard = async () => {
     if (!formData.title || !formData.message) {
       alert('Please fill in all fields');
@@ -58,6 +89,7 @@ export default function CreateCard() {
       emoji: formData.emoji,
       message: formData.message,
       ...(formData.imageUrl && { imageUrl: formData.imageUrl }),
+      ...(formData.audioUrl && { audioUrl: formData.audioUrl }),
       ...(formData.lastPageMessage && { lastPageMessage: formData.lastPageMessage }),
       ...(formData.lastPageText && { lastPageText: formData.lastPageText }),
       ...(formData.lastPageLink && { lastPageLink: formData.lastPageLink }),
@@ -173,6 +205,36 @@ export default function CreateCard() {
             {imagePreview && (
               <div className="mt-4 rounded-lg overflow-hidden shadow-md">
                 <img src={imagePreview} alt="preview" className="max-h-64 mx-auto" />
+              </div>
+            )}
+          </div>
+
+          <div>
+            <label className="label">
+              <span className="label-text font-semibold text-black">add music (mp3) (optional)</span>
+            </label>
+            <input
+              type="file"
+              accept="audio/mpeg,audio/mp3,audio/*"
+              onChange={handleAudioUpload}
+              className="file-input file-input-bordered w-full text-black"
+            />
+            {audioPreview && (
+              <div className="mt-4 rounded-lg overflow-hidden shadow-md p-4 bg-gray-50">
+                <div className="flex items-center justify-between gap-4 flex-wrap">
+                  <div className="text-sm text-black opacity-80 break-all">{audioName}</div>
+                  <button
+                    className="btn btn-ghost btn-sm text-black"
+                    onClick={() => {
+                      setAudioPreview(null);
+                      setAudioName('');
+                      setFormData(prev => ({ ...prev, audioUrl: '' }));
+                    }}
+                  >
+                    remove
+                  </button>
+                </div>
+                <audio className="w-full mt-3" controls preload="metadata" src={audioPreview} />
               </div>
             )}
           </div>

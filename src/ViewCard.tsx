@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getCard, initializeDb } from './lib/db';
 import type { CardData } from './lib/db';
@@ -10,6 +10,8 @@ export default function ViewCard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [autoplayBlocked, setAutoplayBlocked] = useState(false);
 
   useEffect(() => {
     if (!cardId) {
@@ -38,6 +40,26 @@ export default function ViewCard() {
 
     fetchCard();
   }, [cardId]);
+
+  useEffect(() => {
+    if (!card?.audioUrl) return;
+
+    const el = audioRef.current;
+    if (!el) return;
+
+    if (isOpen) {
+      const playPromise = el.play();
+      if (playPromise) {
+        playPromise
+          .then(() => setAutoplayBlocked(false))
+          .catch(() => setAutoplayBlocked(true));
+      }
+    } else {
+      el.pause();
+      el.currentTime = 0;
+      setAutoplayBlocked(false);
+    }
+  }, [isOpen, card?.audioUrl]);
 
   if (loading) {
     return (
@@ -72,6 +94,25 @@ export default function ViewCard() {
       <header className="mb-12 text-center">
         <h1 className="text-4xl font-bold text-black">a card for you!</h1>
       </header>
+
+      {card.audioUrl && (
+        <div className="w-full max-w-2xl mb-8">
+          <div className="bg-white rounded-xl shadow-lg p-4">
+            <audio
+              ref={audioRef}
+              className="w-full"
+              controls
+              preload="metadata"
+              src={card.audioUrl}
+            />
+            {autoplayBlocked && (
+              <div className="mt-2 text-sm text-black opacity-70">
+                tap play to start the music
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       <div className="flex flex-row items-center gap-12 max-w-7xl flex-wrap justify-center">
         <div 

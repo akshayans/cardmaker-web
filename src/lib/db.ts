@@ -31,6 +31,7 @@ export type CardData = {
   emoji: string;
   message: string;
   imageUrl?: string;
+  audioUrl?: string;
   lastPageMessage?: string;
   lastPageText?: string;
   lastPageLink?: string;
