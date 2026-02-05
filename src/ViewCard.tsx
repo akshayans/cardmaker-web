@@ -129,7 +129,7 @@ export default function ViewCard() {
           {autoplayBlocked && (
             <div className="w-full max-w-2xl mb-8">
               <div className="bg-white rounded-xl shadow-lg p-4 text-sm text-black opacity-70">
-                tap anywhere to start the music
+                open the card!
               </div>
             </div>
           )}
