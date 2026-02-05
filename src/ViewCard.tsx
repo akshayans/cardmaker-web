@@ -112,9 +112,9 @@ export default function ViewCard() {
   }
 
   return (
-    <div className="flex flex-col items-center justify-start min-h-screen p-12">
+    <div className="flex flex-col items-center justify-start min-h-screen p-4 sm:p-8 md:p-12">
       <header className="mb-12 text-center">
-        <h1 className="text-4xl font-bold text-black">a card for you!</h1>
+        <h1 className="text-2xl sm:text-4xl font-bold text-black">a card for you!</h1>
       </header>
 
       {card.audioUrl && (
@@ -141,9 +141,9 @@ export default function ViewCard() {
           card.lastPageMessage || card.lastPageText || card.lastPageLink
         );
         return (
-          <div className="flex flex-row items-center gap-12 max-w-7xl flex-wrap justify-center">
+          <div className="flex flex-col lg:flex-row items-center gap-6 sm:gap-12 w-full max-w-7xl flex-wrap justify-center">
             <div 
-              className="relative w-112.5 h-150 perspective-2000px cursor-pointer group"
+              className="relative w-[90vw] max-w-[450px] h-[120vw] max-h-[600px] perspective-2000px cursor-pointer group"
               onClick={() => setIsOpen(!isOpen)}
             >
               <div 
@@ -152,13 +152,13 @@ export default function ViewCard() {
                 }`}
               >
                 <div className="absolute inset-0 bg-primary text-secondary-content rounded-r-2xl border-y-2 border-r-2 border-secondary-focus/30 flex items-center justify-center backface-hidden shadow-2xl">
-                  <div className="text-center px-10">
-                    <div className="text-7xl mb-8">{card.emoji}</div>
-                    <h1 className="text-5xl font-black text-white tracking-tight">{card.title}</h1>
+                  <div className="text-center px-6 sm:px-10">
+                    <div className="text-6xl sm:text-7xl mb-6 sm:mb-8">{card.emoji}</div>
+                    <h1 className="text-3xl sm:text-5xl font-black text-white tracking-tight">{card.title}</h1>
                   </div>
                 </div>
 
-                <div className="absolute inset-0 bg-white text-neutral-content rounded-l-2xl transform-[rotateY(180deg)] backface-hidden border-l border-white/10 flex flex-col items-center justify-center p-12">
+                <div className="absolute inset-0 bg-white text-neutral-content rounded-l-2xl transform-[rotateY(180deg)] backface-hidden border-l border-white/10 flex flex-col items-center justify-center p-6 sm:p-12">
                     {card.imageUrl ? (
                       <img src={card.imageUrl} alt="card" className="w-full h-full object-cover rounded-l-xl" />
                     ) : (
@@ -167,9 +167,9 @@ export default function ViewCard() {
                 </div>
               </div>
 
-              <div className="absolute inset-0 z-10 bg-white text-neutral-content rounded-r-2xl border-2 border-neutral-focus shadow-[25px_25px_50px_-12px_rgba(0,0,0,0.5)] flex flex-col justify-between p-12">
+              <div className="absolute inset-0 z-10 bg-white text-neutral-content rounded-r-2xl border-2 border-neutral-focus shadow-[25px_25px_50px_-12px_rgba(0,0,0,0.5)] flex flex-col justify-between p-6 sm:p-12">
                 <div className="space-y-8">
-                  <p className="text-sm text-black leading-relaxed opacity-80">
+                  <p className="text-sm sm:text-base text-black leading-relaxed opacity-80">
                     {card.message}
                   </p>
                 </div>
@@ -177,9 +177,9 @@ export default function ViewCard() {
             </div>
 
             {hasExtraSurprise && (
-              <div className="flex flex-col gap-4">
+              <div className="flex flex-col gap-4 w-full max-w-[450px]">
                 <button 
-                  className="btn btn-primary text-white p-5" 
+                  className="btn btn-primary text-white w-full p-4 sm:p-5" 
                   onClick={() => navigate(`/card/${cardId}/last`)}
                 >
                   extra surprise
@@ -191,7 +191,7 @@ export default function ViewCard() {
       })()}
 
       <button 
-        className="btn btn-secondary text-white p-5 mt-8" 
+        className="btn btn-secondary text-white w-full max-w-[450px] p-4 sm:p-5 mt-8" 
         onClick={() => navigate('/')}
       >
         create your own card
